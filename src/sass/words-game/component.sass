@@ -4,7 +4,8 @@ html, body
 	position: absolute
 	background: transparent
 	font-size: 1px
-	font-family: "Futura"
+	font-family: "Futura", sans-serif
+	overflow: hidden
 html
 	width: 100vw
 	height: 100vh
@@ -19,50 +20,246 @@ body
 	margin: auto
 	background: #222221
 	font-size: 30rem
+	overflow: hidden
 	&.stopped
-		background: #500
+		background: #222221
 	&.in-game
-		background: #050
+		background: #222221
 	&.post-game
-		background: #880
+		background: #222221
+	&.pre-game
+		background: #222221
 .template
 	display: none
+.countdown-overlay
+	position: absolute
+	top: 0
+	left: 0
+	width: 1920rem
+	height: 1080rem
+	background: rgba(0, 0, 0, 0.8)
+	display: none
+	align-items: center
+	justify-content: center
+	z-index: 10000
+	&.active
+		display: flex
+	.countdown-number
+		font-size: 400rem
+		font-weight: bold
+		color: white
+		text-shadow: 0 0 50rem rgba(255, 255, 255, 0.8)
+.pre-game
+	position: absolute
+	top: 0
+	left: 0
+	width: 1920rem
+	height: 1080rem
+	display: flex
+	align-items: center
+	justify-content: center
+	z-index: 1000
+	body.pre-game &
+		opacity: 100
+		display: flex
+	body.in-game &, body.post-game &, body.stopped &
+		opacity: 0
+		display: none
+	.title-screen
+		text-align: center
+		padding: 80rem
+		background: rgba(34, 34, 33, 0.95)
+		border: 2rem solid #555
+		border-radius: 10rem
+		max-width: 1000rem
+		max-height: 900rem
+		overflow-y: auto
+		.game-title
+			font-size: 120rem
+			font-weight: bold
+			color: #667eea
+			margin-bottom: 30rem
+			text-shadow: 3rem 3rem 6rem rgba(0, 0, 0, 0.2)
+		.subtitle
+			font-size: 50rem
+			color: #764ba2
+			margin-bottom: 60rem
+		.instructions
+			margin: 60rem 0
+			.instruction-item
+				display: flex
+				align-items: center
+				justify-content: flex-start
+				margin: 30rem 0
+				padding: 20rem
+				background: rgba(102, 126, 234, 0.1)
+				border-radius: 15rem
+				.icon
+					font-size: 60rem
+					margin-right: 30rem
+				.text
+					font-size: 40rem
+					color: #333
+					text-align: left
+		.start-command
+			margin: 60rem 0
+			padding: 30rem
+			background: rgba(118, 75, 162, 0.2)
+			border-radius: 15rem
+			.label
+				font-size: 35rem
+				color: #555
+				margin-bottom: 15rem
+			.command
+				font-size: 50rem
+				font-weight: bold
+				color: #764ba2
+				font-family: monospace
+				background: white
+				padding: 15rem 30rem
+				border-radius: 10rem
+				display: inline-block
+		.waiting
+			font-size: 35rem
+			color: #888
+			margin-top: 40rem
+			font-style: italic
 .in-game
 	position: absolute
 	top: 0
 	left: 0
-	// opacity: 0
+	width: 1920rem
+	height: 1080rem
+	overflow: hidden
 	body.in-game &
 		opacity: 100
-	body.post-game &
+		display: block
+	body.post-game &, body.pre-game &, body.stopped &
 		opacity: 0
+		display: none
 .post-game
 	position: absolute
 	top: 0
 	left: 0
-	// opacity: 100
-	body.in-game &
-		opacity: 0
+	width: 1920rem
+	height: 1080rem
+	overflow: hidden
 	body.post-game &
 		opacity: 100
+		display: block
+	body.in-game &, body.pre-game &, body.stopped &
+		opacity: 0
+		display: none
 .gameboard
 	width: 1920rem
 	position: relative
+	overflow: hidden
+.leaderboards-container
+	display: none
+	position: absolute
+	top: 0
+	left: 0
+	width: 1920rem
+	height: 1080rem
+	padding: 20rem
+	box-sizing: border-box
+	body.post-game &
+		display: flex
+		gap: 15rem
+		justify-content: space-between
+		align-items: flex-start
 .leaderboard
 	display: none
-	width: 1920rem
+	flex: 1
 	position: relative
+	padding: 15rem
+	background: rgba(0, 0, 0, 0.7)
+	border: 1rem solid #555
+	max-height: 1040rem
+	overflow-y: auto
+	box-sizing: border-box
+	body.post-game &
+		display: block
+	.title
+		font-size: 60rem
+		color: white
+		text-transform: uppercase
+		font-weight: bold
+		margin-bottom: 30rem
+		text-align: center
+		border-bottom: 3rem solid rgba(255, 255, 255, 0.3)
+		padding-bottom: 20rem
+	.player
+		display: flex
+		justify-content: space-between
+		align-items: center
+		padding: 10rem 15rem
+		margin: 5rem 0
+		background: rgba(255, 255, 255, 0.05)
+		border: 1rem solid #444
+		font-size: 28rem
+		color: white
+		&[data-rank="1"]
+			background: rgba(255, 215, 0, 0.2)
+			border-color: #ffd700
+			.name::before
+				content: "🥇 "
+		&[data-rank="2"]
+			background: rgba(192, 192, 192, 0.2)
+			border-color: #c0c0c0
+			.name::before
+				content: "🥈 "
+		&[data-rank="3"]
+			background: rgba(205, 127, 50, 0.2)
+			border-color: #cd7f32
+			.name::before
+				content: "🥉 "
+		.name
+			flex: 1
+			text-transform: uppercase
+			font-weight: bold
+			display: flex
+			align-items: center
+			gap: 5rem
+			.platform-icon
+				font-size: 20rem
+		.score
+			font-size: 28rem
+			font-weight: bold
+			color: #0f0
+			margin-left: 15rem
 .clock
 	position: relative
 	width: 1000rem
-	height: 10rem
-	background-color: #0a0
-	margin: 20rem auto
+	height: 20rem
+	background-color: rgba(255, 255, 255, 0.3)
+	border-radius: 15rem
+	margin: 30rem auto
+	border: 4rem solid rgba(255, 255, 255, 0.5)
+	box-shadow: 0 5rem 15rem rgba(0, 0, 0, 0.2)
 	.indicator
-		position: relative
+		position: absolute
+		right: 0
 		width: 100%
 		height: 100%
-		background-color: #0f0
+		background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%)
+		border-radius: 11rem
+		transition: width 0.1s linear
+		box-shadow: inset 0 2rem 5rem rgba(0, 0, 0, 0.2)
+	.lock-cycle-markers
+		position: absolute
+		width: 100%
+		height: 100%
+		pointer-events: none
+		.lock-marker
+			position: absolute
+			width: 6rem
+			height: 120%
+			top: -10%
+			background-color: rgba(255, 255, 0, 0.6)
+			border-left: 2rem solid #ff0
+			border-right: 2rem solid #ff0
+			box-shadow: 0 0 10rem rgba(255, 255, 0, 0.8)
 .status
 	width: 100%
 	height: 100rem
@@ -70,7 +267,9 @@ body
 .root-word
 	position: relative
 	margin: auto
-	display: inline
+	display: inline-block
+	text-align: center
+	padding: 20rem 0
 	.letter
 		display: inline-block
 		text-transform: uppercase
@@ -78,23 +277,56 @@ body
 		height: 100rem
 		overflow: hidden
 		position: relative
-		margin: 10rem
+		margin: 5rem
 		.letter-holder
-			diplay: relative
-		.main-letter, .alt-letter, .letter-text
+			position: relative
+			width: 100%
+			height: 100%
+		.main-letter, .alt-letter
 			position: absolute
 			width: 100rem
 			height: 100rem
-			line-height: 100rem
-			font-size: 75rem
-			background: white
+			background: #333
 			text-align: center
-			text-transform: uppercase
+			border: 2rem solid #555
+			top: 0
+			left: 0
+			.letter-text
+				position: absolute
+				width: 100%
+				height: 70%
+				top: 0
+				line-height: 70rem
+				font-size: 60rem
+				text-transform: uppercase
+				font-weight: bold
+				color: #fff
+			.value
+				position: absolute
+				width: 100%
+				height: 30%
+				bottom: 0
+				line-height: 30rem
+				font-size: 18rem
+				font-weight: bold
+				color: #aaa
+				background: #222
+				border-top: 1rem solid #444
 		.main-letter
 			left: 0
 		.alt-letter
-			background: #ccc
+			background: #444
 			left: 100rem
+	&.decoy
+		.main-letter, .alt-letter
+			background: #500
+			border-color: #f00
+			color: white
+	&.hidden
+		.main-letter .letter-text, .alt-letter .letter-text
+			font-size: 50rem
+			font-weight: bold
+			color: #ff0
 .sub-words
 	position: relative
 	// padding: 20rem 100rem
@@ -117,6 +349,11 @@ body
 		flex-grow: 1
 		text-transform: uppercase
 		color: white
+		display: flex
+		align-items: center
+		gap: 5rem
+		.lock-icon
+			font-size: 16rem
 		&.locked
 			color: red
 	.letters
@@ -134,3 +371,73 @@ body
 		.letters
 			.letter
 				color: #000
+.interstitial
+	position: absolute
+	top: 50%
+	left: 50%
+	transform: translate(-50%, -50%)
+	text-align: center
+	z-index: 2000
+	background: rgba(0, 0, 0, 0.9)
+	padding: 60rem
+	border: 2rem solid #555
+	.performance-rating
+		.title
+			font-size: 50rem
+			color: white
+			margin-bottom: 30rem
+		.stars
+			display: flex
+			justify-content: center
+			gap: 15rem
+			.star
+				font-size: 60rem
+				opacity: 0.3
+				&.active
+					opacity: 1
+					color: #ff0
+.next-round-info
+	position: absolute
+	bottom: 30rem
+	left: 50%
+	transform: translateX(-50%)
+	text-align: center
+	font-size: 35rem
+	color: white
+	.countdown-text, .game-over-text
+		font-weight: bold
+	.game-over-text
+		color: #f00
+.moderator-instructions
+	position: absolute
+	top: 20rem
+	right: 20rem
+	background: rgba(0, 0, 0, 0.8)
+	padding: 20rem
+	border: 2rem solid #555
+	border-radius: 10rem
+	z-index: 100
+	.title
+		font-size: 24rem
+		color: #ffd700
+		margin-bottom: 15rem
+		font-weight: bold
+	.instructions
+		display: flex
+		flex-direction: column
+		gap: 10rem
+		.instruction-item
+			display: flex
+			flex-direction: column
+			gap: 5rem
+			.label
+				font-size: 18rem
+				color: #ccc
+			.command
+				font-size: 20rem
+				color: #0f0
+				font-family: monospace
+				font-weight: bold
+				background: rgba(0, 255, 0, 0.1)
+				padding: 5rem 10rem
+				border-radius: 5rem

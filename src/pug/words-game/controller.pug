@@ -1,6 +1,6 @@
 section.words-game.stopped
 	h2 Words Controller #[a(href="/words-game/component.html" target="_blank") Component]
-	.conent
+	.content
 		.overlay-url 
 		.game-state
 			h3 Game State
@@ -8,6 +8,12 @@ section.words-game.stopped
 			.in-game In Game 
 				.clock 00:00
 				.current-word
+				.level-controls
+					label Level: 
+						input#level-input(type="number" min="0" max="9" value="0")
+						button#set-level Set Level
+					.current-level-display Level: 
+						span.level-value 0
 				.current-sub-words
 			.post-game Post Game
 		.selected-word 

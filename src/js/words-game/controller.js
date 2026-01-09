@@ -6,6 +6,14 @@ const GAME_STATES = {
 
 window.addEventListener('DOMContentLoaded', () => {
 	console.log('words-game controller loaded');
+	
+	// Ensure socket is available
+	if (typeof io === 'undefined') {
+		console.error('Socket.io not loaded');
+		return;
+	}
+	
+	let socket = io();
 
 	let currentWord = {
 		root_word: "",
@@ -18,13 +26,34 @@ window.addEventListener('DOMContentLoaded', () => {
 	let $resetGameButton = $(".words-game button#reset-game")
 	let $startGameButton = $(".words-game button#start-game")
 	let $pauseGameButton = $(".words-game button#pause-game")
-	// TODO: add change events
+	let $continueGameButton = $(".words-game button#continue-game")
+	let $levelInput = $('#level-input')
+	let $setLevelButton = $('#set-level')
+	let $currentLevelDisplay = $('.current-level-display .level-value')
 
 	$startGameButton.on('click', () => {
 		socket.emit("words-game.start");
 	})
 
+	$pauseGameButton.on('click', () => {
+		socket.emit("words-game.pause");
+	})
+
+	$continueGameButton.on('click', () => {
+		socket.emit("words-game.continue");
+	})
+
+	$resetGameButton.on('click', () => {
+		socket.emit("words-game.reset");
+	})
+
 	$selectRandomWordButton.on('click', selectRandomWord);
+
+	$setLevelButton.on('click', () => {
+		let level = parseInt($levelInput.val()) || 0;
+		level = Math.max(0, Math.min(9, level));
+		socket.emit("words-game.set-level", level);
+	})
 
 	$wordsList.on('change', event => {
         selectedWord = $wordsList.val();
@@ -36,6 +65,7 @@ window.addEventListener('DOMContentLoaded', () => {
 		changeGamePhase(gamedata);
 		updateClock(gamedata);
 		updateCurrentWord(gamedata);
+		updateLevelDisplay(gamedata);
 		console.log("words-game.state", gamedata);
 	})
 
@@ -74,13 +104,48 @@ window.addEventListener('DOMContentLoaded', () => {
 	
 	function updateClock(gamedata){}
 	function updateCurrentWord(gamedata){
-		if (currentWord && currentWord.root_word == gamedata.game.currentWord.root_word) return;
-		$(".words-game .current-word").text(gamedata.game.currentWord.root_word)
+		let wordChanged = !currentWord || currentWord.root_word != gamedata.game.currentWord.root_word;
+		
+		if (wordChanged) {
+			currentWord = {
+				root_word: gamedata.game.currentWord.root_word,
+				subWords: [...gamedata.game.currentWord.subwords]
+			};
+			$(".words-game .current-word").text(gamedata.game.currentWord.root_word);
+		}
+		
 		let $subWords = $(".words-game .current-sub-words");
+		
+		// Update found words status
+		let foundWords = gamedata.game.foundWords.map(fw => fw.word);
+		
+		// Clear and rebuild sub-words display
 		$subWords.empty();
-		gamedata.game.currentWord.subwords.forEach(word => {
-			$subWords.append(`<div>${word}</div>`);
-		})
+		
+		// Sort words by length, then alphabetically
+		let sortedWords = [...gamedata.game.currentWord.subwords].sort((a, b) => {
+			if (a.length !== b.length) return a.length - b.length;
+			return a.localeCompare(b);
+		});
+		
+		sortedWords.forEach(word => {
+			let isFound = foundWords.includes(word);
+			let $wordDiv = $(`<div class="sub-word-item ${isFound ? 'found' : ''}">${word}</div>`);
+			if (isFound) {
+				let foundData = gamedata.game.foundWords.find(fw => fw.word === word);
+				if (foundData && foundData.player) {
+					$wordDiv.append(`<span class="found-by"> - ${foundData.player.username}</span>`);
+				}
+			}
+			$subWords.append($wordDiv);
+		});
+	}
+
+	function updateLevelDisplay(gamedata){
+		if (gamedata.currentLevel !== undefined) {
+			$currentLevelDisplay.text(gamedata.currentLevel);
+			$levelInput.val(gamedata.currentLevel);
+		}
 	}
 
 	function getWords(){

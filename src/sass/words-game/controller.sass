@@ -1,5 +1,8 @@
 select#words-list
 	float: left
+	width: 200px
+	margin-right: 20px
+
 .stopped
 	& .stopped
 		display: block
@@ -21,3 +24,75 @@ select#words-list
 		display: none
 	& .post-game
 		display: block
+
+.current-sub-words
+	display: flex
+	flex-direction: column
+	flex-wrap: wrap
+	max-height: 400px
+	width: 100%
+	margin-top: 10px
+	padding: 10px
+	background: #f5f5f5
+	border-radius: 5px
+
+	.sub-word-item
+		padding: 5px 10px
+		margin: 2px
+		background: #fff
+		border: 1px solid #ddd
+		border-radius: 3px
+		width: fit-content
+		min-width: 100px
+		
+		&.found
+			background: #d4edda
+			border-color: #c3e6cb
+			color: #155724
+			text-decoration: line-through
+			
+			.found-by
+				font-size: 0.9em
+				color: #666
+				font-style: italic
+
+.level-controls
+	margin: 10px 0
+	padding: 10px
+	background: #e9ecef
+	border-radius: 5px
+	
+	label
+		margin-right: 10px
+		
+	input#level-input
+		width: 60px
+		margin: 0 5px
+		padding: 5px
+		
+	button#set-level
+		padding: 5px 15px
+		margin-left: 5px
+		
+	.current-level-display
+		margin-left: 20px
+		font-weight: bold
+		
+		.level-value
+			color: #007bff
+
+.controls
+	display: flex
+	flex-wrap: wrap
+	gap: 10px
+	margin-top: 10px
+	
+	button
+		padding: 8px 16px
+		cursor: pointer
+		border: 1px solid #ccc
+		border-radius: 4px
+		background: #fff
+		
+		&:hover
+			background: #f0f0f0

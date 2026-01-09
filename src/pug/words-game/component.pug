@@ -2,13 +2,44 @@ doctype html
 html(lang="en")
 	head
 	body
+		.pre-game
+			.title-screen
+				.game-title Not Words on Stream
+				.subtitle A Friendly Word Game
+				.instructions
+					.instruction-item
+						.icon 💬
+						.text Type words in chat to find words from the scrambled letters!
+					.instruction-item
+						.icon 🔒
+						.text You can only guess once per lock cycle - watch the yellow markers!
+					.instruction-item
+						.icon ⭐
+						.text Work together to reach the target score and advance levels!
+					.instruction-item
+						.icon 🎯
+						.text Higher levels add decoy letters and hidden letters for extra challenge!
+				.start-command
+					.label Start the game with:
+					.command !startWords
+				.waiting Waiting for game to start...
+		
 		.in-game
+			.countdown-overlay
+				.countdown-number
 			.status 
 				.logo Not Words on Stream
 				.marquee
 					.hint 
 					.achievement
-				.round-score
+				.round-info
+					.level Level: 
+						span.level-value 0
+					.score-display
+						.current-score 0
+						.separator /
+						.target-score 0
+				.modifiers-display
 			.gameboard
 				.root-word
 					.letter.template
@@ -21,23 +52,43 @@ html(lang="en")
 								.value 
 				.clock
 					.indicator
+					.lock-cycle-markers
 				.sub-words
 		.post-game
-			.status 
-				.logo Not Words on Stream
-				.marquee
-					.hint 
-					.achievement
-				.round-score 
-			.round-score
-			.leaderboard.running-leaderboard
-				.player.template 
-					.name
-					.score
-			.leaderboard.round-leaderboard
-				.player.template 
-					.name
-					.score
+			.interstitial
+				.performance-rating
+					.title Performance
+					.stars
+						.star.template ⭐
+				.countdown
+			.moderator-instructions
+				.title Moderator Controls
+				.instructions
+					.instruction-item
+						.label To start a new game:
+						.command !startWords
+					.instruction-item
+						.label To continue to next round:
+						.command !continueWords
+			.leaderboards-container
+				.leaderboard.running-leaderboard
+					.title Total Scores
+					.player.template 
+						.name
+						.score
+				.leaderboard.round-leaderboard
+					.title Round Scores
+					.player.template 
+						.name
+						.score
+				.leaderboard.all-time-leaderboard
+					.title All-Time Scores
+					.player.template 
+						.name
+						.score
+			.next-round-info
+				.countdown-text
+				.game-over-text
 	
 	link(rel="stylesheet", href="/words-game/component.css")
 	script(src="/socket.io/socket.io.js")
