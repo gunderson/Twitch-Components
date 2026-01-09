@@ -1,0 +1,26 @@
+section.words-game.stopped
+	h2 Words Controller #[a(href="/words-game/component.html" target="_blank") Component]
+	.conent
+		.overlay-url 
+		.game-state
+			h3 Game State
+			.stopped Stopped !!!
+			.in-game In Game 
+				.clock 00:00
+				.current-word
+				.current-sub-words
+			.post-game Post Game
+		.selected-word 
+			select#words-list(name="words-list" size=15)
+				option.word-option.template
+			.controls
+				button#launch-game(name="launch-game") Launch Game
+				input#word-file-dir(type="file" name="word-file-dir")
+				button#random-word(name="random-word") Random Word 
+				button#load-word(name="load-word") Load Word
+				button#reset-game(name="reset-words") Reset Game
+				button#start-game(name="start-words") Start Game
+				button#pause-game(name="pause-words") Pause Game
+				button#continue-game(name="continue-words") Continue Game
+		script(src="js/words-game/controller.js") 
+		link(rel="stylesheet", href="/words-game/controller.css")

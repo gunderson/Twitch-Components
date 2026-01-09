@@ -1,0 +1,16 @@
+section.countdown-clock
+	h2 Countdown Controller #[a(href="/countdown/component.html" target="_blank") Component]
+	.content
+		.clock 
+			h3 Time Remaining
+			input.hours(value="00" size=2)
+			| :
+			input.minutes(value="07" size=2)
+			| :
+			input.seconds(value="30" size=2)
+		button.set-clock Set
+		button.run Run
+		button.pause Pause
+		button.quick-set Set to 7:30
+	link(rel="stylesheet", href="/countdown/controller.css")
+	script(src="js/countdown/controller.js") 

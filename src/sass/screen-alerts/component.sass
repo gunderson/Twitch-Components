@@ -1,0 +1,73 @@
+html, body
+	position: relative
+	width: 100vw
+	height: 100vh
+	overflow: hidden
+	background-color: #888
+	font-size: 1px
+	margin: 0
+	padding: 0
+	font-family: "Futura PT"
+html.obs
+	background-color: transparent
+	body
+		background-color: transparent
+
+.screen-alerts
+	display: block
+	margin: 0
+	padding: 0
+.alert
+	position: absolute
+	bottom: 150rem
+	left: 520rem
+	display: none
+	margin: 10rem
+.content
+	position: absolute
+	top: 0
+	left: 0
+	font-size: 18rem
+	font-family: sans-serif
+	width: 300rem
+	opacity: 0
+	.header
+		display: flex
+		flex-direction: row
+		flex-wrap: wrap
+		justify-content: flex-start
+		align-items: stretch
+		align-content: stretch
+		width: 100%
+	.type-label
+		padding: 5rem 10rem
+		display: block
+		color: white
+		flex-grow: 0
+		flex-shrink: 1
+		.tw &
+			background-color: purple
+		.yt &
+			background-color: red
+	.username
+		padding: 5rem 10rem
+		background-color: white
+		display: block
+		flex-grow: 1
+		flex-shrink: 1
+		size: 24
+		.tw &
+			color: purple
+		.yt &
+			color: red
+	.message
+		padding: 10rem
+		display: block
+		width: 100%
+		flex-grow: 1
+		flex-shrink: 1
+		flex-basis: auto
+		align-self: auto
+		order: 3
+		box-sizing: border-box
+		background: linear-gradient(180deg,rgba(222, 222, 222, 0.8) 0%, rgba(255, 255, 255, 0.8) 9%, rgba(255, 255, 255, 0.8) 100%)

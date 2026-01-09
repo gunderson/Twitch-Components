@@ -1,0 +1,47 @@
+doctype html
+html(lang="en")
+	head
+	body
+		.in-game
+			.status 
+				.logo Not Words on Stream
+				.marquee
+					.hint 
+					.achievement
+				.round-score
+			.gameboard
+				.root-word
+					.letter.template
+						.letter-holder
+							.main-letter
+								.letter-text
+								.value 
+							.alt-letter
+								.letter-text
+								.value 
+				.clock
+					.indicator
+				.sub-words
+		.post-game
+			.status 
+				.logo Not Words on Stream
+				.marquee
+					.hint 
+					.achievement
+				.round-score 
+			.round-score
+			.leaderboard.running-leaderboard
+				.player.template 
+					.name
+					.score
+			.leaderboard.round-leaderboard
+				.player.template 
+					.name
+					.score
+	
+	link(rel="stylesheet", href="/words-game/component.css")
+	script(src="/socket.io/socket.io.js")
+	script(src="/lib/lodash/lodash.min.js") 
+	script(src="/lib/jquery/dist/jquery.min.js") 
+	script(src="/lib/gsap/dist/all.js")
+	script(src="/js/words-game/component.js")

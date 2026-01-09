@@ -1,0 +1,18 @@
+html
+	head
+		link(rel="stylesheet" href="index.css")
+		title OBS Overlay Control Panel
+	h1 OBS Overlay Control Panel
+	input#messageInput(type="text" placeholder="Type a message")
+	button#sendButton Send
+	div#status Status
+
+	h2 Panels
+	include screen-alerts/controller.pug
+	include countdown/controller.pug
+	include risk-rank/controller.pug
+	include pegs/controller.pug
+	include words-game/controller.pug
+	script(src="/socket.io/socket.io.js")
+	script(src="/lib/jquery/dist/jquery.min.js")
+	script(src="js/index.js")

@@ -1,0 +1,23 @@
+select#words-list
+	float: left
+.stopped
+	& .stopped
+		display: block
+	& .in-game
+		display: none
+	& .post-game
+		display: none
+.in-game
+	& .stopped
+		display: none
+	& .in-game
+		display: block
+	& .post-game
+		display: none
+.post-game
+	& .stopped
+		display: none
+	& .in-game
+		display: none
+	& .post-game
+		display: block

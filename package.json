@@ -1,0 +1,35 @@
+{
+  "name": "obs-components",
+  "version": "1.0.0",
+  "description": "OBS overlay components",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Patrick Gunderson",
+  "license": "MIT",
+  "dependencies": {
+    "@streamerbot/client": "^1.12.2",
+    "axios": "^1.7.2",
+    "chalk": "^5.6.2",
+    "cheerio": "^1.0.0-rc.12",
+    "colors": "^1.4.0",
+    "express": "^4.19.2",
+    "greensock": "^1.20.2",
+    "gsap": "^3.13.0",
+    "jquery": "^3.7.1",
+    "lodash": "^4.17.21",
+    "pug": "^3.0.3",
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.8.1",
+    "soundjs": "^1.0.1"
+  },
+  "devDependencies": {
+    "sass": "^1.77.4"
+  },
+  "constants": {
+    "service-port": 15101,
+    "panel-port": 15102
+  }
+}
