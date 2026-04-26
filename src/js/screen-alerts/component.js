@@ -27,7 +27,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function triggerAlert(alertData){
+	// Kill any existing timelines and reset state before starting new animation
 	clearAlerts();
+	
+	// Create new timeline instance
+	tl = gsap.timeline({
+		onComplete: () => {
+			socket.emit('screen-alerts.alert-display-complete');
+		}
+	});
+	
 	console.log('screen-alerts.trigger-alert', alertData);
 	
 	// Update text content
@@ -98,9 +107,19 @@ function playAlertSound(alertType) {
 }
 
 function clearAlerts(){
+	// Kill any existing animation timeline
 	if (tl) {
 		tl.kill();
+		tl = null;
 	}
+	
+	// Stop any playing audio
+	if (audioElement) {
+		audioElement.pause();
+		audioElement.currentTime = 0;
+	}
+	
+	// Reset all alerts to hidden state
 	$('.alert').css('display', 'none');
 	$('.alert .content').css('opacity', '0');
 };

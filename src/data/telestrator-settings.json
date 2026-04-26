@@ -1,0 +1,19 @@
+{
+  "color": "#ff2d55",
+  "thickness": 6,
+  "shadowWidth": 11,
+  "shadowBlur": 5,
+  "sampleRateMs": 16,
+  "autoClearMs": 16900,
+  "colorChips": [
+    {
+      "id": "default-red",
+      "color": "#ff2d55"
+    },
+    {
+      "id": "1777195616485-7dc19152cb1ed8",
+      "color": "#ffff55"
+    }
+  ],
+  "shadowEnabled": true
+}

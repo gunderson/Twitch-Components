@@ -20,6 +20,14 @@ window.addEventListener('DOMContentLoaded', () => {
 		socket.emit('screen-alerts.sim-tw-bits');
 	});
 	
+	$('button#tw-raid').on('click', () => {
+		socket.emit('screen-alerts.sim-tw-raid');
+	});
+	
+	$('button#tw-channel-points').on('click', () => {
+		socket.emit('screen-alerts.sim-tw-channel-points');
+	});
+	
 	$('button#yt-sub').on('click', () => {
 		socket.emit('screen-alerts.sim-yt-sub');
 	});
@@ -34,6 +42,14 @@ window.addEventListener('DOMContentLoaded', () => {
 	
 	$('button#yt-donation').on('click', () => {
 		socket.emit('screen-alerts.sim-yt-donation');
+	});
+	
+	$('button#yt-supersticker').on('click', () => {
+		socket.emit('screen-alerts.sim-yt-supersticker');
+	});
+	
+	$('button#yt-membership-gift').on('click', () => {
+		socket.emit('screen-alerts.sim-yt-membership-gift');
 	});
 	
 	// Listen for queue updates

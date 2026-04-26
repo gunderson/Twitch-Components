@@ -1,64 +1,139 @@
+// ============================================
+// VARIABLES - Colors, Dimensions, and Values
+// ============================================
+
+// Stage Dimensions
+$stage-width: 1920rem
+$stage-height: 1080rem
+
+// Colors - Dark Theme with Blue Accents
+$bg-primary: #0a0a0a
+$bg-secondary: #151515
+$bg-tertiary: #1a1a1a
+$bg-overlay: rgba(0, 0, 0, 0.85)
+$bg-card: rgba(20, 20, 20, 0.95)
+$bg-panel: rgba(15, 15, 15, 0.9)
+
+// Text Colors - Light on Dark
+$text-primary: #ffffff
+$text-secondary: #e0e0e0
+$text-tertiary: #b0b0b0
+$text-muted: #808080
+
+// Blue Accents
+$blue-primary: #3b82f6
+$blue-secondary: #60a5fa
+$blue-accent: #2563eb
+$blue-glow: rgba(59, 130, 246, 0.4)
+
+// Borders and Dividers
+$border-color: #2a2a2a
+$border-light: #3a3a3a
+$border-blue: rgba(59, 130, 246, 0.5)
+
+// Status Colors
+$success: #10b981
+$warning: #f59e0b
+$error: #ef4444
+$info: $blue-primary
+
+// Special Elements
+$decoy-color: #dc2626
+$hidden-color: #f59e0b
+$found-color: $success
+
+// Typography
+$font-family: "Futura", "Arial", sans-serif
+$font-size-base: 30rem
+$font-size-small: 20rem
+$font-size-large: 50rem
+$font-size-xlarge: 80rem
+$font-size-xxlarge: 120rem
+
+// Spacing
+$spacing-xs: 5rem
+$spacing-sm: 10rem
+$spacing-md: 20rem
+$spacing-lg: 30rem
+$spacing-xl: 60rem
+
+// Border Radius
+$radius-sm: 5rem
+$radius-md: 10rem
+$radius-lg: 15rem
+
+// Shadows
+$shadow-sm: 0 2rem 8rem rgba(0, 0, 0, 0.3)
+$shadow-md: 0 4rem 12rem rgba(0, 0, 0, 0.4)
+$shadow-lg: 0 8rem 24rem rgba(0, 0, 0, 0.5)
+$shadow-blue: 0 0 20rem $blue-glow
+
+// Z-Index Layers
+$z-base: 1
+$z-panel: 100
+$z-overlay: 1000
+$z-modal: 10000
+
+// ============================================
+// BASE STYLES
+// ============================================
+
 html, body
 	margin: 0
 	padding: 0
 	position: absolute
 	background: transparent
 	font-size: 1px
-	font-family: "Futura", sans-serif
+	font-family: $font-family
 	overflow: hidden
 html
 	width: 100vw
 	height: 100vh
-	background: white
+	background: $bg-primary
 body
 	top: 0
 	left: 0
 	bottom: 0
 	right: 0
-	width: 1920rem
-	height: 1080rem
+	width: $stage-width
+	height: $stage-height
 	margin: auto
-	background: #222221
-	font-size: 30rem
+	background: $bg-primary
+	font-size: $font-size-base
+	color: $text-primary
 	overflow: hidden
-	&.stopped
-		background: #222221
-	&.in-game
-		background: #222221
-	&.post-game
-		background: #222221
-	&.pre-game
-		background: #222221
+	&.stopped, &.in-game, &.post-game, &.pre-game
+		background: $bg-primary
 .template
 	display: none
 .countdown-overlay
 	position: absolute
 	top: 0
 	left: 0
-	width: 1920rem
-	height: 1080rem
-	background: rgba(0, 0, 0, 0.8)
+	width: $stage-width
+	height: $stage-height
+	background: $bg-overlay
 	display: none
 	align-items: center
 	justify-content: center
-	z-index: 10000
+	z-index: $z-modal
 	&.active
 		display: flex
 	.countdown-number
 		font-size: 400rem
 		font-weight: bold
-		color: white
-		text-shadow: 0 0 50rem rgba(255, 255, 255, 0.8)
+		color: $text-primary
+		text-shadow: 0 0 50rem $blue-glow, 0 0 100rem $blue-primary
 .pre-game
 	position: absolute
 	top: 0
 	left: 0
-	width: 1920rem
-	height: 1080rem
+	width: $stage-width
+	height: $stage-height
 	display: flex
 	align-items: center
 	justify-content: center
-	z-index: 1000
+	z-index: $z-overlay
 	body.pre-game &
 		opacity: 100
 		display: flex
@@ -67,69 +142,75 @@ body
 		display: none
 	.title-screen
 		text-align: center
-		padding: 80rem
-		background: rgba(34, 34, 33, 0.95)
-		border: 2rem solid #555
-		border-radius: 10rem
+		padding: $spacing-xl
+		background: $bg-card
+		border: 2rem solid $border-blue
+		border-radius: $radius-md
 		max-width: 1000rem
 		max-height: 900rem
 		overflow-y: auto
+		box-shadow: $shadow-lg, $shadow-blue
 		.game-title
-			font-size: 120rem
+			font-size: $font-size-xxlarge
 			font-weight: bold
-			color: #667eea
-			margin-bottom: 30rem
-			text-shadow: 3rem 3rem 6rem rgba(0, 0, 0, 0.2)
+			color: $blue-primary
+			margin-bottom: $spacing-lg
+			text-shadow: 0 0 20rem $blue-glow
 		.subtitle
-			font-size: 50rem
-			color: #764ba2
-			margin-bottom: 60rem
+			font-size: $font-size-large
+			color: $blue-secondary
+			margin-bottom: $spacing-xl
 		.instructions
-			margin: 60rem 0
+			margin: $spacing-xl 0
 			.instruction-item
 				display: flex
 				align-items: center
 				justify-content: flex-start
-				margin: 30rem 0
-				padding: 20rem
-				background: rgba(102, 126, 234, 0.1)
-				border-radius: 15rem
+				margin: $spacing-lg 0
+				padding: $spacing-md
+				background: rgba(59, 130, 246, 0.1)
+				border: 1rem solid $border-blue
+				border-radius: $radius-lg
 				.icon
 					font-size: 60rem
-					margin-right: 30rem
+					margin-right: $spacing-lg
+					color: $blue-primary
 				.text
 					font-size: 40rem
-					color: #333
+					color: $text-secondary
 					text-align: left
 		.start-command
-			margin: 60rem 0
-			padding: 30rem
-			background: rgba(118, 75, 162, 0.2)
-			border-radius: 15rem
+			margin: $spacing-xl 0
+			padding: $spacing-lg
+			background: rgba(59, 130, 246, 0.15)
+			border: 1rem solid $border-blue
+			border-radius: $radius-lg
 			.label
 				font-size: 35rem
-				color: #555
-				margin-bottom: 15rem
+				color: $text-tertiary
+				margin-bottom: $spacing-md
 			.command
-				font-size: 50rem
+				font-size: $font-size-large
 				font-weight: bold
-				color: #764ba2
+				color: $blue-primary
 				font-family: monospace
-				background: white
-				padding: 15rem 30rem
-				border-radius: 10rem
+				background: $bg-secondary
+				border: 1rem solid $border-blue
+				padding: $spacing-md $spacing-lg
+				border-radius: $radius-md
 				display: inline-block
+				box-shadow: $shadow-blue
 		.waiting
 			font-size: 35rem
-			color: #888
+			color: $text-muted
 			margin-top: 40rem
 			font-style: italic
 .in-game
 	position: absolute
 	top: 0
 	left: 0
-	width: 1920rem
-	height: 1080rem
+	width: $stage-width
+	height: $stage-height
 	overflow: hidden
 	body.in-game &
 		opacity: 100
@@ -141,8 +222,8 @@ body
 	position: absolute
 	top: 0
 	left: 0
-	width: 1920rem
-	height: 1080rem
+	width: $stage-width
+	height: $stage-height
 	overflow: hidden
 	body.post-game &
 		opacity: 100
@@ -151,7 +232,7 @@ body
 		opacity: 0
 		display: none
 .gameboard
-	width: 1920rem
+	width: $stage-width
 	position: relative
 	overflow: hidden
 .leaderboards-container
@@ -159,59 +240,69 @@ body
 	position: absolute
 	top: 0
 	left: 0
-	width: 1920rem
-	height: 1080rem
-	padding: 20rem
+	width: $stage-width
+	height: $stage-height
+	padding: $spacing-md
 	box-sizing: border-box
 	body.post-game &
 		display: flex
-		gap: 15rem
+		gap: $spacing-md
 		justify-content: space-between
 		align-items: flex-start
 .leaderboard
 	display: none
 	flex: 1
 	position: relative
-	padding: 15rem
-	background: rgba(0, 0, 0, 0.7)
-	border: 1rem solid #555
+	padding: $spacing-md
+	background: $bg-panel
+	border: 1rem solid $border-color
 	max-height: 1040rem
 	overflow-y: auto
 	box-sizing: border-box
+	box-shadow: $shadow-md
 	body.post-game &
 		display: block
 	.title
 		font-size: 60rem
-		color: white
+		color: $text-primary
 		text-transform: uppercase
 		font-weight: bold
-		margin-bottom: 30rem
+		margin-bottom: $spacing-lg
 		text-align: center
-		border-bottom: 3rem solid rgba(255, 255, 255, 0.3)
-		padding-bottom: 20rem
+		border-bottom: 2rem solid $border-blue
+		padding-bottom: $spacing-md
+		text-shadow: 0 0 10rem $blue-glow
 	.player
 		display: flex
 		justify-content: space-between
 		align-items: center
-		padding: 10rem 15rem
-		margin: 5rem 0
-		background: rgba(255, 255, 255, 0.05)
-		border: 1rem solid #444
+		padding: $spacing-sm $spacing-md
+		margin: $spacing-xs 0
+		background: rgba(255, 255, 255, 0.03)
+		border: 1rem solid $border-color
 		font-size: 28rem
-		color: white
+		color: $text-primary
+		border-radius: $radius-sm
+		transition: all 0.2s ease
+		&:hover
+			background: rgba(255, 255, 255, 0.05)
+			border-color: $border-light
 		&[data-rank="1"]
-			background: rgba(255, 215, 0, 0.2)
-			border-color: #ffd700
+			background: rgba(251, 191, 36, 0.15)
+			border-color: #fbbf24
+			box-shadow: 0 0 15rem rgba(251, 191, 36, 0.3)
 			.name::before
 				content: "🥇 "
 		&[data-rank="2"]
-			background: rgba(192, 192, 192, 0.2)
-			border-color: #c0c0c0
+			background: rgba(209, 213, 219, 0.15)
+			border-color: #d1d5db
+			box-shadow: 0 0 10rem rgba(209, 213, 219, 0.2)
 			.name::before
 				content: "🥈 "
 		&[data-rank="3"]
-			background: rgba(205, 127, 50, 0.2)
-			border-color: #cd7f32
+			background: rgba(217, 119, 6, 0.15)
+			border-color: #d97706
+			box-shadow: 0 0 10rem rgba(217, 119, 6, 0.2)
 			.name::before
 				content: "🥉 "
 		.name
@@ -220,32 +311,33 @@ body
 			font-weight: bold
 			display: flex
 			align-items: center
-			gap: 5rem
+			gap: $spacing-xs
 			.platform-icon
 				font-size: 20rem
 		.score
 			font-size: 28rem
 			font-weight: bold
-			color: #0f0
-			margin-left: 15rem
+			color: $blue-primary
+			margin-left: $spacing-md
+			text-shadow: 0 0 5rem $blue-glow
 .clock
 	position: relative
 	width: 1000rem
 	height: 20rem
-	background-color: rgba(255, 255, 255, 0.3)
-	border-radius: 15rem
-	margin: 30rem auto
-	border: 4rem solid rgba(255, 255, 255, 0.5)
-	box-shadow: 0 5rem 15rem rgba(0, 0, 0, 0.2)
+	background-color: rgba(255, 255, 255, 0.1)
+	border-radius: $radius-lg
+	margin: $spacing-lg auto
+	border: 2rem solid $border-color
+	box-shadow: $shadow-sm, inset 0 2rem 4rem rgba(0, 0, 0, 0.3)
 	.indicator
 		position: absolute
 		right: 0
 		width: 100%
 		height: 100%
-		background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%)
-		border-radius: 11rem
+		background: linear-gradient(90deg, $blue-primary 0%, $blue-secondary 100%)
+		border-radius: $radius-md
 		transition: width 0.1s linear
-		box-shadow: inset 0 2rem 5rem rgba(0, 0, 0, 0.2)
+		box-shadow: inset 0 2rem 5rem rgba(0, 0, 0, 0.3), 0 0 10rem $blue-glow
 	.lock-cycle-markers
 		position: absolute
 		width: 100%
@@ -256,20 +348,69 @@ body
 			width: 6rem
 			height: 120%
 			top: -10%
-			background-color: rgba(255, 255, 0, 0.6)
-			border-left: 2rem solid #ff0
-			border-right: 2rem solid #ff0
-			box-shadow: 0 0 10rem rgba(255, 255, 0, 0.8)
+			background-color: rgba(251, 191, 36, 0.4)
+			border-left: 2rem solid $warning
+			border-right: 2rem solid $warning
+			box-shadow: 0 0 10rem rgba(251, 191, 36, 0.6)
 .status
 	width: 100%
 	height: 100rem
 	position: relative
+	display: flex
+	align-items: center
+	justify-content: space-between
+	padding: $spacing-md $spacing-lg
+	background: $bg-secondary
+	border-bottom: 1rem solid $border-color
+	box-shadow: $shadow-sm
+	.logo
+		font-size: $font-size-large
+		font-weight: bold
+		color: $blue-primary
+		text-shadow: 0 0 10rem $blue-glow
+	.marquee
+		flex: 1
+		text-align: center
+		color: $text-secondary
+		font-size: $font-size-base
+	.hint, .achievement
+		color: $text-tertiary
+	.round-info
+		display: flex
+		align-items: center
+		gap: $spacing-lg
+		font-size: $font-size-base
+		color: $text-secondary
+		.level
+			.level-value
+				color: $blue-primary
+				font-weight: bold
+				text-shadow: 0 0 5rem $blue-glow
+		.score-display
+			display: flex
+			align-items: center
+			gap: $spacing-xs
+			.current-score
+				color: $text-primary
+				font-weight: bold
+			.separator
+				color: $text-muted
+			.target-score
+				color: $blue-secondary
+				font-weight: bold
+	.modifiers-display
+		font-size: $font-size-small
+		color: $text-tertiary
+		padding: $spacing-xs $spacing-sm
+		background: rgba(59, 130, 246, 0.1)
+		border: 1rem solid $border-blue
+		border-radius: $radius-sm
 .root-word
 	position: relative
 	margin: auto
 	display: inline-block
 	text-align: center
-	padding: 20rem 0
+	padding: $spacing-md 0
 	.letter
 		display: inline-block
 		text-transform: uppercase
@@ -277,7 +418,7 @@ body
 		height: 100rem
 		overflow: hidden
 		position: relative
-		margin: 5rem
+		margin: $spacing-xs
 		.letter-holder
 			position: relative
 			width: 100%
@@ -286,11 +427,12 @@ body
 			position: absolute
 			width: 100rem
 			height: 100rem
-			background: #333
+			background: $bg-secondary
 			text-align: center
-			border: 2rem solid #555
+			border: 2rem solid $border-color
 			top: 0
 			left: 0
+			box-shadow: $shadow-sm
 			.letter-text
 				position: absolute
 				width: 100%
@@ -300,7 +442,7 @@ body
 				font-size: 60rem
 				text-transform: uppercase
 				font-weight: bold
-				color: #fff
+				color: $text-primary
 			.value
 				position: absolute
 				width: 100%
@@ -309,27 +451,27 @@ body
 				line-height: 30rem
 				font-size: 18rem
 				font-weight: bold
-				color: #aaa
-				background: #222
-				border-top: 1rem solid #444
+				color: $text-tertiary
+				background: $bg-tertiary
+				border-top: 1rem solid $border-color
 		.main-letter
 			left: 0
 		.alt-letter
-			background: #444
+			background: $bg-tertiary
 			left: 100rem
 	&.decoy
 		.main-letter, .alt-letter
-			background: #500
-			border-color: #f00
-			color: white
+			background: rgba(220, 38, 38, 0.3)
+			border-color: $decoy-color
+			color: $text-primary
+			box-shadow: 0 0 10rem rgba(220, 38, 38, 0.4)
 	&.hidden
 		.main-letter .letter-text, .alt-letter .letter-text
 			font-size: 50rem
 			font-weight: bold
-			color: #ff0
+			color: $hidden-color
 .sub-words
 	position: relative
-	// padding: 20rem 100rem
 	margin: auto
 	width: 75vw
 	height: 400rem
@@ -338,39 +480,50 @@ body
 	flex-wrap: wrap
 	align-content: center
 .sub-word
-	font-size: 20rem
-	margin: 5rem 15rem
-	background-color: #888
+	font-size: $font-size-small
+	margin: $spacing-xs $spacing-md
+	background-color: $bg-secondary
+	border: 1rem solid $border-color
 	display: flex
 	justify-content: flex-end
 	min-width: 320rem
+	border-radius: $radius-sm
+	box-shadow: $shadow-sm
+	transition: all 0.2s ease
 	
 	.player-name
 		flex-grow: 1
 		text-transform: uppercase
-		color: white
+		color: $text-secondary
 		display: flex
 		align-items: center
-		gap: 5rem
+		gap: $spacing-xs
+		padding: $spacing-xs $spacing-sm
 		.lock-icon
 			font-size: 16rem
 		&.locked
-			color: red
+			color: $error
 	.letters
 		.letter
 			text-transform: uppercase
 			display: inline-block
 			margin: 3rem
-			background-color: #fff
+			background-color: $bg-tertiary
+			border: 1rem solid $border-color
 			width: 20rem
 			height: 20rem
 			line-height: 20rem
 			text-align: center
 			color: transparent
+			border-radius: 2rem
 	&.found
+		background-color: rgba(16, 185, 129, 0.15)
+		border-color: $found-color
+		box-shadow: 0 0 10rem rgba(16, 185, 129, 0.2)
 		.letters
 			.letter
-				color: #000
+				color: $text-primary
+				background-color: rgba(16, 185, 129, 0.2)
 .interstitial
 	position: absolute
 	top: 50%
@@ -378,66 +531,80 @@ body
 	transform: translate(-50%, -50%)
 	text-align: center
 	z-index: 2000
-	background: rgba(0, 0, 0, 0.9)
-	padding: 60rem
-	border: 2rem solid #555
+	background: $bg-panel
+	padding: $spacing-xl
+	border: 2rem solid $border-blue
+	border-radius: $radius-md
+	box-shadow: $shadow-lg, $shadow-blue
 	.performance-rating
 		.title
-			font-size: 50rem
-			color: white
-			margin-bottom: 30rem
+			font-size: $font-size-large
+			color: $text-primary
+			margin-bottom: $spacing-lg
+			text-shadow: 0 0 10rem $blue-glow
 		.stars
 			display: flex
 			justify-content: center
-			gap: 15rem
+			gap: $spacing-md
 			.star
 				font-size: 60rem
 				opacity: 0.3
+				filter: grayscale(1)
 				&.active
 					opacity: 1
-					color: #ff0
+					color: $blue-primary
+					filter: grayscale(0)
+					text-shadow: 0 0 15rem $blue-glow
 .next-round-info
 	position: absolute
-	bottom: 30rem
+	bottom: $spacing-lg
 	left: 50%
 	transform: translateX(-50%)
 	text-align: center
 	font-size: 35rem
-	color: white
+	color: $text-primary
 	.countdown-text, .game-over-text
 		font-weight: bold
+	.countdown-text
+		color: $blue-primary
+		text-shadow: 0 0 10rem $blue-glow
 	.game-over-text
-		color: #f00
+		color: $error
+		text-shadow: 0 0 10rem rgba(239, 68, 68, 0.5)
 .moderator-instructions
 	position: absolute
-	top: 20rem
-	right: 20rem
-	background: rgba(0, 0, 0, 0.8)
-	padding: 20rem
-	border: 2rem solid #555
-	border-radius: 10rem
-	z-index: 100
+	bottom: $spacing-md
+	left: $spacing-md
+	background: $bg-panel
+	padding: $spacing-md
+	border: 2rem solid $border-blue
+	border-radius: $radius-md
+	z-index: $z-panel
+	box-shadow: $shadow-md
 	.title
 		font-size: 24rem
-		color: #ffd700
-		margin-bottom: 15rem
+		color: $blue-primary
+		margin-bottom: $spacing-md
 		font-weight: bold
+		text-shadow: 0 0 5rem $blue-glow
 	.instructions
 		display: flex
 		flex-direction: column
-		gap: 10rem
+		gap: $spacing-sm
 		.instruction-item
 			display: flex
 			flex-direction: column
-			gap: 5rem
+			gap: $spacing-xs
 			.label
 				font-size: 18rem
-				color: #ccc
+				color: $text-tertiary
 			.command
 				font-size: 20rem
-				color: #0f0
+				color: $blue-primary
 				font-family: monospace
 				font-weight: bold
-				background: rgba(0, 255, 0, 0.1)
-				padding: 5rem 10rem
-				border-radius: 5rem
+				background: rgba(59, 130, 246, 0.1)
+				border: 1rem solid $border-blue
+				padding: $spacing-xs $spacing-sm
+				border-radius: $radius-sm
+				box-shadow: 0 0 5rem $blue-glow

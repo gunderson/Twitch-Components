@@ -1,0 +1,51 @@
+html
+	head
+	body
+		section.stream-status
+			.local-clock
+				.time 00:00:00
+				.date …
+				.zone
+			.platforms
+				.platform.twitch
+					.label Twitch
+					.row
+						span.live(data-live="") …
+						span.muted  · 
+						span.heading Uptime 
+						span.uptime —
+					.row
+						span.heading Viewers 
+						span.viewers —
+					.row.title-line
+						span.heading Now playing 
+						span.title —
+					.row
+						span.heading Status 
+						span.meta —
+					.row.muted
+						span.heading Last event 
+						span.last-event —
+				.platform.youtube
+					.label YouTube
+					.row
+						span.live(data-live="") …
+						span.muted  · 
+						span.heading Uptime 
+						span.uptime —
+					.row
+						span.heading Viewers 
+						span.viewers —
+					.row.title-line
+						span.heading Stream 
+						span.title —
+					.row
+						span.heading Stats 
+						span.meta —
+					.row.muted
+						span.heading Last event 
+						span.last-event —
+	link(rel="stylesheet", href="/stream-status/component.css")
+	script(src="/socket.io/socket.io.js")
+	script(src="/lib/jquery/dist/jquery.min.js")
+	script(src="/js/stream-status/component.js")

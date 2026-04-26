@@ -1,0 +1,85 @@
+.stream-status.controller
+	padding: 20px
+	font-family: system-ui, "Segoe UI", Roboto, sans-serif
+
+	h2
+		margin-bottom: 16px
+
+	.content
+		display: flex
+		flex-direction: column
+		gap: 16px
+		max-width: 900px
+
+	.local-clock
+		padding: 12px 16px
+		background: #f5f5f5
+		border: 1px solid #ddd
+		border-radius: 8px
+		.time
+			font-size: 1.6rem
+			font-weight: 600
+		.date
+			font-size: 0.95rem
+			color: #333
+		.zone
+			font-size: 0.8rem
+			color: #666
+			margin-top: 4px
+
+	.panels
+		display: grid
+		grid-template-columns: 1fr 1fr
+		gap: 16px
+		@media (max-width: 800px)
+			grid-template-columns: 1fr
+
+	.panel
+		background: #fafafa
+		border: 1px solid #e0e0e0
+		border-radius: 8px
+		padding: 12px 14px
+		h3
+			margin: 0 0 10px 0
+			font-size: 1.1rem
+		h4
+			margin: 12px 0 6px 0
+			font-size: 0.85rem
+			color: #555
+
+		.platform
+			.row
+				display: flex
+				gap: 8px
+				align-items: baseline
+				flex-wrap: wrap
+				margin: 4px 0
+				font-size: 0.9rem
+			.heading
+				color: #666
+				min-width: 160px
+			.live
+				font-weight: 700
+				&[data-live="1"]
+					color: #0a7a3e
+				&[data-live="0"]
+					color: #666
+
+		pre
+			margin: 0
+			background: #111
+			color: #c8e6c9
+			padding: 10px
+			border-radius: 6px
+			font-size: 11px
+			line-height: 1.4
+			max-height: 220px
+			overflow: auto
+			white-space: pre-wrap
+			word-break: break-all
+
+		&.twitch-panel h3
+			color: #5c3ec7
+
+		&.youtube-panel h3
+			color: #c62828

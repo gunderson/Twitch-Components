@@ -1,0 +1,58 @@
+section.stream-status.controller
+	h2 Stream &amp; time #[a(href="/stream-status/component.html" target="_blank") Component]
+	.content
+		.local-clock
+			.time 00:00:00
+			.date …
+			.zone
+		.panels
+			.panel.twitch-panel
+				h3 Twitch
+				.platform.twitch
+					.row
+						span.heading State 
+						span.live(data-live="") …
+					.row
+						span.heading Uptime 
+						span.uptime —
+					.row
+						span.heading Viewers 
+						span.viewers —
+					.row
+						span.heading Title / game 
+						span.title —
+					.row
+						span.heading Game / status 
+						span.meta —
+					.row
+						span.heading Last Streamerbot event 
+						span.last-event —
+				h4 Raw payload (latest)
+				pre.twitch-raw
+			.panel.youtube-panel
+				h3 YouTube
+				.platform.youtube
+					.row
+						span.heading State 
+						span.live(data-live="") …
+					.row
+						span.heading Uptime 
+						span.uptime —
+					.row
+						span.heading Viewers 
+						span.viewers —
+					.row
+						span.heading Stream title 
+						span.title —
+					.row
+						span.heading Stats (summary) 
+						span.meta —
+					.row
+						span.heading Last Streamerbot event 
+						span.last-event —
+				h4 StatisticsUpdated payload
+				pre.youtube-statistics
+				h4 Raw payload (latest)
+				pre.youtube-raw
+	link(rel="stylesheet", href="/stream-status/controller.css")
+	script(src="js/stream-status/controller.js")

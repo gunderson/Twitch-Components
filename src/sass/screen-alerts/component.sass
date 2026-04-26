@@ -7,7 +7,7 @@ html, body
 	font-size: 1px
 	margin: 0
 	padding: 0
-	font-family: "Futura PT"
+	font-family: "futura bk bt"
 html.obs
 	background-color: transparent
 	body
@@ -17,6 +17,13 @@ html.obs
 	display: block
 	margin: 0
 	padding: 0
+	position: absolute
+	top: 0
+	left: 0
+	bottom: 0
+	right: 0
+	width: 1920rem
+	height: 1080rem
 .alert
 	position: absolute
 	bottom: 150rem
@@ -28,46 +35,36 @@ html.obs
 	top: 0
 	left: 0
 	font-size: 18rem
-	font-family: sans-serif
+	// font-family: "futura-pt", "futura", sans-serif
 	width: 300rem
 	opacity: 0
+	color: white
+	border-left: 1rem solid #white
+	font-weight: 100
+	background-color: rgba(0, 0, 0, 0.5)
+	border-left: 1rem solid #fff
 	.header
-		display: flex
-		flex-direction: row
-		flex-wrap: wrap
-		justify-content: flex-start
-		align-items: stretch
-		align-content: stretch
+		display: block
 		width: 100%
 	.type-label
 		padding: 5rem 10rem
 		display: block
-		color: white
-		flex-grow: 0
-		flex-shrink: 1
 		.tw &
-			background-color: purple
+			// background-color: purple
 		.yt &
-			background-color: red
+			// background-color: red
 	.username
-		padding: 5rem 10rem
-		background-color: white
+		font-family: "futura hv bt"
+		padding: 0rem 10rem
+		// background-color: white
 		display: block
-		flex-grow: 1
-		flex-shrink: 1
-		size: 24
+		// size: 24
 		.tw &
-			color: purple
+			// color: purple
 		.yt &
-			color: red
+			// color: red
 	.message
 		padding: 10rem
 		display: block
 		width: 100%
-		flex-grow: 1
-		flex-shrink: 1
-		flex-basis: auto
-		align-self: auto
-		order: 3
-		box-sizing: border-box
-		background: linear-gradient(180deg,rgba(222, 222, 222, 0.8) 0%, rgba(255, 255, 255, 0.8) 9%, rgba(255, 255, 255, 0.8) 100%)
+		// background: linear-gradient(180deg,rgba(222, 222, 222, 0.8) 0%, rgba(255, 255, 255, 0.8) 9%, rgba(255, 255, 255, 0.8) 100%)

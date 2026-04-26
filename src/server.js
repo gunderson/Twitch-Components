@@ -29,7 +29,8 @@ const RiskRankService = require('./js/risk-rank/service');
 const CountdownService = require('./js/countdown/service')
 const WordsGameService = require('./js/words-game/service');
 const ScreenAlertService = require('./js/screen-alerts/service');
-const { fstat } = require('fs');
+const StreamStatusService = require('./js/stream-status/service');
+const TelestratorService = require('./js/telestrator/service');
 
 // Set the view engine to Pug
 app.set('view engine', 'pug');
@@ -89,11 +90,14 @@ io.on('connection', (socket) => {
     WordsGameService.setupIO(socket, io);
     CountdownService.setupIO(socket, io);
     ScreenAlertService.setupIO(socket, io);
+    StreamStatusService.setupIO(socket, io);
+    TelestratorService.setupIO(socket, io);
 });
 
 // trust that the socket gets connected because it doesn't give a connect event
 WordsGameService.setupStreamerbotListeners(streamerBotSocket);
 ScreenAlertService.setupStreamerbotListeners(streamerBotSocket);
+StreamStatusService.setupStreamerbotListeners(streamerBotSocket);
 
 const PORT = process.env.PORT || settings.httpPort;
 server.listen(PORT, () => {

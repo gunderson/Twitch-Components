@@ -1,0 +1,71 @@
+section.telestrator.controller
+	h2 Telestrator #[a(href="/telestrator/drawer.html" target="_blank") Drawer] #[span  | ] #[a(href="/telestrator/display.html" target="_blank") Display]
+	.content
+		.status-card
+			.status-line
+				.label Host
+				.value.host-state offline
+			.status-line
+				.label Connected
+				.value.presence waiting...
+		.controls
+			button.start-capture Start Capture
+			button.stop-capture Stop Capture
+			button.clear-lines Clear Lines
+			button.fullscreen Full Screen
+		.menu
+			.settings
+				.color-chip-section
+					.row-title Line Color Chips
+					.chip-grid
+					.chip-submenu
+						.submenu-header
+							span Edit Chip
+							button.close-chip-submenu(type="button") x
+						.chip-editor
+							label
+								| Hex
+								input.chip-hex(type="text" value="#ff2d55" maxlength="7")
+							.chip-preview
+							.hsb-controls
+								label
+									| Hue
+									input.chip-hue(type="range" min="0" max="360" step="1" value="0")
+									span.chip-hue-value 0
+								label
+									| Saturation
+									input.chip-saturation(type="range" min="0" max="100" step="1" value="100")
+									span.chip-saturation-value 100%
+								label
+									| Brightness
+									input.chip-brightness(type="range" min="0" max="100" step="1" value="100")
+									span.chip-brightness-value 100%
+							button.spot-pick-color(type="button") Spot Pick Color
+							.editor-buttons
+								button.save-chip(type="button") Save Chip
+								button.delete-chip(type="button") Delete Chip
+				label
+					| Thickness
+					input.line-thickness(type="range" min="1" max="30" step="1" value="6")
+					span.line-thickness-value 6
+				label
+					| Shadow Width
+					input.shadow-width(type="range" min="0" max="30" step="1" value="2")
+					span.shadow-width-value 2
+				label
+					| Shadow Blur (px)
+					input.shadow-blur(type="range" min="0" max="30" step="1" value="0")
+					span.shadow-blur-value 0
+				label
+					| Sample Rate (ms)
+					input.sample-rate(type="range" min="8" max="100" step="1" value="16")
+					span.sample-rate-value 16
+				label
+					| Auto Clear (ms)
+					input.auto-clear(type="range" min="0" max="30000" step="100" value="0")
+					span.auto-clear-value 0
+	link(rel="stylesheet", href="/telestrator/controller.css")
+	script(src="/socket.io/socket.io.js")
+	script(src="/lib/jquery/dist/jquery.min.js")
+	script(src="/js/telestrator/shared.js")
+	script(src="/js/telestrator/controller.js")

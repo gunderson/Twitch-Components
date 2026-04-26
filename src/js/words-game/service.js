@@ -35,6 +35,28 @@ const GAME_PHASES = {
 	GAME_OVER: "GAME_OVER"
 }
 
+// Timing configuration - all coordinated timings between frontend and backend
+// This object is passed to the frontend so timings stay synchronized
+const TIMING_CONFIG = {
+	// Pre-round countdown (shown before each round starts)
+	preRoundCountdown: {
+		duration: 3000, // Total countdown duration in ms (3 seconds)
+		numberDuration: 1000, // Time each number is shown (1 second)
+		goDuration: 500, // Time "GO!" is shown (0.5 seconds)
+		animationDuration: 300 // Animation duration for countdown numbers
+	},
+	// Post-game sequence timings
+	postGame: {
+		interstitialDuration: 5000, // Time to show performance/interstitial (5 seconds)
+		leaderboardDuration: 10000, // Time to show leaderboards before next round (10 seconds)
+		totalDuration: 15000 // Total post-game duration (5s interstitial + 10s leaderboard)
+	},
+	// Round timing
+	round: {
+		clockStartDelay: 3500 // Delay after countdown before starting game clock (3s countdown + 0.5s buffer)
+	}
+}
+
 
 class Player {
 	constructor(username, platform = "", role = 1, lastMessage = "", emoteURL = "") {
@@ -134,8 +156,20 @@ class Game {
 			return false; // Player already submitted this cycle
 		}
 		
-		let word = _.includes(this.currentWord.subwords, text) ? text : null;
-		if (word){
+		// Normalize text for comparison (lowercase, trim)
+		text = text.toLowerCase().trim();
+		
+		// First check if word has already been found (prevents "stealing")
+		let alreadyFound = this.foundWords.some(fw => fw.word.toLowerCase() === text);
+		if (alreadyFound) {
+			return false; // Word has already been guessed
+		}
+		
+		// Then check if word is a valid subword (case-insensitive comparison)
+		let wordMatch = this.currentWord.subwords.find(sw => sw.toLowerCase() === text);
+		if (wordMatch){
+			// Use the original word from the array to maintain proper casing
+			let word = wordMatch;
 			let score = this.getWordScore(word);
 			_.remove(this.currentWord.subwords, word);
 			game.foundWords.push({player, word, score});
@@ -165,8 +199,31 @@ class Game {
 	}
 
 	getRoundGoal(){
-		// Calculate minimum group score based on level (50% at level 0, 80% at level 9)
-		let minPercent = this.level > 9 ? 0.80 : 0.50 + (this.level / 9) * 0.30;
+		// Calculate minimum group score based on level (reduced significantly for low levels)
+		// Level 0: 25%, Level 1: 30%, Level 2: 35%, Level 3: 40%, Level 4: 45%
+		// Level 5: 50%, Level 6: 55%, Level 7: 60%, Level 8: 70%, Level 9+: 80%
+		let minPercent;
+		if (this.level === 0) {
+			minPercent = 0.25;
+		} else if (this.level === 1) {
+			minPercent = 0.30;
+		} else if (this.level === 2) {
+			minPercent = 0.35;
+		} else if (this.level === 3) {
+			minPercent = 0.40;
+		} else if (this.level === 4) {
+			minPercent = 0.45;
+		} else if (this.level === 5) {
+			minPercent = 0.50;
+		} else if (this.level === 6) {
+			minPercent = 0.55;
+		} else if (this.level === 7) {
+			minPercent = 0.60;
+		} else if (this.level === 8) {
+			minPercent = 0.70;
+		} else {
+			minPercent = 0.80;
+		}
 		return Math.floor(minPercent * this.getMaxScore());
 	}
 	
@@ -223,16 +280,16 @@ class Game {
 			stars = Math.min(5, Math.max(1, Math.floor(1 + excessPercent * 4)));
 		}
 		
-		// Set up post-game clock for sequencing
+		// Set up post-game clock for sequencing using timing config
 		this.clock.clearCuePoints();
-		this.clock.setDuration(15000); // 15 seconds total (5s interstitial + 10s leaderboard)
+		this.clock.setDuration(TIMING_CONFIG.postGame.totalDuration);
 		
 		// Schedule cue points for post-game sequence
-		this.clock.addCuePoint('show-leaderboards', 5000); // After 5s, show leaderboards
+		this.clock.addCuePoint('show-leaderboards', TIMING_CONFIG.postGame.interstitialDuration);
 		
-		// If successful, schedule next round start via cue point
+		// If successful, schedule next round start via cue point (backend triggers the scene)
 		if (this.roundSuccess) {
-			this.clock.addCuePoint('start-next-round', 15000);
+			this.clock.addCuePoint('start-next-round', TIMING_CONFIG.postGame.totalDuration);
 		}
 		
 		// Store performance stars in game state
@@ -255,13 +312,13 @@ class Game {
 		
 		if (excessPercent >= 1.0) {
 			// Excellent performance (100%+ above target) - skip a level
-			this.level = Math.min(9, this.level + 2);
+			this.level = Math.min(9, this.level + 5);
 		} else if (excessPercent >= 0.5) {
-			// Good performance - normal progression
-			this.level = Math.min(9, this.level + 1);
+			// Good performance - Good progression
+			this.level = Math.min(9, this.level + 3);
 		} else if (performancePercent < 0.5) {
-			// Poor performance - stay at same level or decrease
-			this.level = Math.max(0, this.level - 1);
+			// Poor performance - Poor progression
+			this.level = Math.max(0, this.level + 1);
 		}
 		// Otherwise stay at same level
 	}
@@ -332,12 +389,21 @@ class Game {
 		// Reset clock but don't start it yet - wait for countdown
 		this.clock.reset();
 		this.clock.clearCuePoints();
+		
+		// Set up shuffle cue points (every 10 seconds)
+		let shuffleFrequency = 1000 * 10;
+		let cueTime = 0;
+		while (cueTime < this.roundDuration) {
+			this.clock.addCuePoint('shuffle', cueTime);
+			cueTime += shuffleFrequency;
+		}
+		
 		emitGameState();
-		// Start clock after countdown
+		// Start clock after countdown (using timing config)
 		setTimeout(() => {
 			this.clock.start();
 			emitGameState();
-		}, 3500); // 3 seconds countdown + 0.5s buffer
+		}, TIMING_CONFIG.round.clockStartDelay);
 	}
 	
 	setupLevelModifiers(modifiers){
@@ -605,10 +671,13 @@ class Clock extends EventEmitter{
 					this.emit("cue-point." + cue.name);
 				}
 			});
-			// end clock
-			this.emit('end')
-			this.pause();
-			// end game
+			// Don't pause immediately - let cue points process first
+			// The 'end' event will be emitted, but we'll pause after a small delay
+			// to ensure cue points are processed
+			setTimeout(() => {
+				this.emit('end');
+				this.pause();
+			}, 0);
 		}
 		this.emit('tick');
 		this.report();
@@ -645,7 +714,8 @@ let GAME_STATE = {
 	hiddenRevealed: false,
 	lockCycleEndTimes: [],
 	currentLockCycle: 0,
-	roundSuccess: false
+	roundSuccess: false,
+	timingConfig: TIMING_CONFIG // Include timing config for frontend synchronization
 }
 
 function createShuffleCues(clock, game, shuffleFrequency){
@@ -660,6 +730,7 @@ createShuffleCues(clock, game, 1000 * 10);
 clock.on('cue-point.shuffle', () => game.shuffleWord());
 clock.on('end', () => game.endRound());
 clock.on('cue-point.start-next-round', () => {
+	// Backend triggers the next round automatically after post-game countdown
 	game.progressLevel();
 	game.startRound();
 });

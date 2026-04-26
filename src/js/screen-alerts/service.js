@@ -2,8 +2,13 @@ const _ = require('lodash');
 
 var alertQueue = [];
 var alertRunning = false;
+var alertTimeout = null;
 var io;
 var socket;
+
+// Animation duration: 0.5s fade in + 5s display + 0.5s fade out = 6s total
+// Timeout buffer: 12 seconds (2x animation time for safety)
+const ALERT_TIMEOUT_MS = 8000;
 
 function setupIO(_socket, _io){
 	io = _io;
@@ -66,6 +71,27 @@ function setupIO(_socket, _io){
 		});
 	});
 
+	socket.on('screen-alerts.sim-tw-raid', () => {
+		triggerAlert({
+			type: "tw-raid",
+			platform: "Twitch",
+			username: "RaiderName",
+			message: "Raided with 150 viewers!",
+			amount: 150
+		});
+	});
+
+	socket.on('screen-alerts.sim-tw-channel-points', () => {
+		triggerAlert({
+			type: "tw-channel-points",
+			platform: "Twitch",
+			username: "PointRedeemer",
+			message: "Custom Reward redeemed!",
+			rewardTitle: "Custom Reward",
+			cost: 500
+		});
+	});
+
 	socket.on('screen-alerts.sim-yt-sub', () => {
 		triggerAlert({
 			type: "yt-sub",
@@ -104,6 +130,26 @@ function setupIO(_socket, _io){
 		});
 	});
 
+	socket.on('screen-alerts.sim-yt-supersticker', () => {
+		triggerAlert({
+			type: "yt-supersticker",
+			platform: "YouTube",
+			username: "StickerSender",
+			message: "Sent a Super Sticker!",
+			amount: "$5.00"
+		});
+	});
+
+	socket.on('screen-alerts.sim-yt-membership-gift', () => {
+		triggerAlert({
+			type: "yt-membership-gift",
+			platform: "YouTube",
+			username: "GiftGiver",
+			message: "Gifted 3 memberships!",
+			amount: 3
+		});
+	});
+
 	socket.on('screen-alerts.alert-display-complete', onAlertDisplayComplete);
 	socket.on('screen-alerts.get-queue', () => {
 		socket.emit('screen-alerts.queue-update', alertQueue);
@@ -130,6 +176,14 @@ function setupStreamerbotListeners(streamerBotSocket){
 		parseTwitchBits(eventData);
 	});
 
+	streamerBotSocket.on('Twitch.Raid', (eventData) => {
+		parseTwitchRaid(eventData);
+	});
+
+	streamerBotSocket.on('Twitch.RewardRedemption', (eventData) => {
+		parseTwitchChannelPoints(eventData);
+	});
+
 	// YouTube Events
 	streamerBotSocket.on('YouTube.Subscription', (eventData) => {
 		parseYouTubeSubscription(eventData);
@@ -145,6 +199,14 @@ function setupStreamerbotListeners(streamerBotSocket){
 
 	streamerBotSocket.on('YouTube.Donation', (eventData) => {
 		parseYouTubeDonation(eventData);
+	});
+
+	streamerBotSocket.on('YouTube.SuperSticker', (eventData) => {
+		parseYouTubeSuperSticker(eventData);
+	});
+
+	streamerBotSocket.on('YouTube.MembershipGift', (eventData) => {
+		parseYouTubeMembershipGift(eventData);
 	});
 }
 
@@ -195,6 +257,29 @@ function parseTwitchBits(eventData) {
 	});
 }
 
+function parseTwitchRaid(eventData) {
+	const data = eventData.data || eventData;
+	triggerAlert({
+		type: "tw-raid",
+		platform: "Twitch",
+		username: data.user?.name || data.username || data.from || "Anonymous",
+		message: data.message || `Raided with ${data.viewers || data.raiders || 0} viewer${(data.viewers || data.raiders || 0) !== 1 ? 's' : ''}!`,
+		amount: data.viewers || data.raiders || 0
+	});
+}
+
+function parseTwitchChannelPoints(eventData) {
+	const data = eventData.data || eventData;
+	triggerAlert({
+		type: "tw-channel-points",
+		platform: "Twitch",
+		username: data.user?.name || data.username || "Anonymous",
+		message: data.message || data.input || `${data.reward?.title || data.rewardTitle || "Reward"} redeemed!`,
+		rewardTitle: data.reward?.title || data.rewardTitle || "Reward",
+		cost: data.reward?.cost || data.cost || 0
+	});
+}
+
 function parseYouTubeSubscription(eventData) {
 	const data = eventData.data || eventData;
 	triggerAlert({
@@ -237,9 +322,37 @@ function parseYouTubeDonation(eventData) {
 	});
 }
 
+function parseYouTubeSuperSticker(eventData) {
+	const data = eventData.data || eventData;
+	triggerAlert({
+		type: "yt-supersticker",
+		platform: "YouTube",
+		username: data.user?.name || data.username || "Anonymous",
+		message: data.message || "Sent a Super Sticker!",
+		amount: data.amount || data.money || "$0.00",
+		stickerId: data.stickerId || data.sticker?.id || null
+	});
+}
+
+function parseYouTubeMembershipGift(eventData) {
+	const data = eventData.data || eventData;
+	const count = data.giftCount || data.count || 1;
+	triggerAlert({
+		type: "yt-membership-gift",
+		platform: "YouTube",
+		username: data.user?.name || data.username || "Anonymous",
+		message: data.message || `Gifted ${count} membership${count > 1 ? 's' : ''}!`,
+		amount: count
+	});
+}
+
 function resetQueue(){
 	alertQueue = [];
 	alertRunning = false;
+	if (alertTimeout) {
+		clearTimeout(alertTimeout);
+		alertTimeout = null;
+	}
 	io.sockets.emit('screen-alerts.clear');
 	io.sockets.emit('screen-alerts.queue-update', []);
 }
@@ -253,14 +366,34 @@ function triggerAlert(alertData){
 		alertQueue.push(alertData);
 		io.sockets.emit('screen-alerts.queue-update', alertQueue);
 	} else {
+		// Clear any existing timeout
+		if (alertTimeout) {
+			clearTimeout(alertTimeout);
+			alertTimeout = null;
+		}
+		
 		io.sockets.emit('screen-alerts.trigger-alert', alertData);
 		alertRunning = true;
+		
+		// Set failsafe timeout to auto-advance queue if frontend doesn't respond
+		alertTimeout = setTimeout(() => {
+			console.warn('Alert timeout: frontend did not send completion signal, auto-advancing queue');
+			alertTimeout = null;
+			onAlertDisplayComplete();
+		}, ALERT_TIMEOUT_MS);
+		
 		// Update queue display (current alert is running, not in queue)
 		io.sockets.emit('screen-alerts.queue-update', alertQueue);
 	}
 }
 
 function onAlertDisplayComplete(alertData){
+	// Clear the timeout if it exists (alert completed normally)
+	if (alertTimeout) {
+		clearTimeout(alertTimeout);
+		alertTimeout = null;
+	}
+	
 	alertRunning = false;
 	const nextAlert = alertQueue.shift();
 	if (nextAlert) {

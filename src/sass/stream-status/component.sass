@@ -1,0 +1,68 @@
+// Overlay-friendly clock + two platform lines
+.stream-status
+	font-family: system-ui, "Segoe UI", Roboto, sans-serif
+	color: #fff
+	background: linear-gradient(145deg, rgba(12, 12, 20, 0.92) 0%, rgba(8, 8, 16, 0.88) 100%)
+	border-radius: 12px
+	padding: 14px 18px
+	max-width: 420px
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65)
+
+	.local-clock
+		text-align: center
+		margin-bottom: 12px
+		.time
+			font-size: 2.1rem
+			font-weight: 600
+			letter-spacing: 0.04em
+		.date
+			font-size: 0.85rem
+			opacity: 0.9
+		.zone
+			font-size: 0.72rem
+			opacity: 0.6
+			margin-top: 4px
+
+	.platforms
+		display: flex
+		flex-direction: column
+		gap: 10px
+
+	.platform
+		background: rgba(255, 255, 255, 0.06)
+		border-radius: 8px
+		padding: 10px 12px
+		border: 1px solid rgba(255, 255, 255, 0.1)
+
+		.label
+			font-size: 0.75rem
+			text-transform: uppercase
+			letter-spacing: 0.12em
+			opacity: 0.7
+			margin-bottom: 6px
+
+		.row
+			font-size: 0.9rem
+			margin: 2px 0
+			.heading
+				opacity: 0.6
+				margin-right: 6px
+		.muted
+			font-size: 0.8rem
+			opacity: 0.55
+
+		&.twitch .label
+			color: #b79cff
+
+		&.youtube .label
+			color: #ff7a7a
+
+		.live
+			font-weight: 700
+			&[data-live="1"]
+				color: #3dff9c
+			&[data-live="0"]
+				color: #8a8a9a
+
+		.title-line .title
+			font-style: italic

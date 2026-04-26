@@ -41,30 +41,43 @@ let countdownInterval = null;
 $top.addClass("pre-game").removeClass("in-game post-game stopped");
 preGameShown = true;
 
+// Track previous phase to detect transitions
+let previousPhase = null;
+
 function onSocketConnect(){
 	
 	socket.on("words-game.state", gamedata => {
+		const currentPhase = gamedata.game.phase;
+		const phaseChanged = previousPhase !== currentPhase;
+		previousPhase = currentPhase;
+		
 		// Show pre-game until game actually starts
-		if (gamedata.game.phase === GAME_STATES.PRE_GAME || gamedata.game.phase === GAME_STATES.GAME_STOPPED) {
+		if (currentPhase === GAME_STATES.PRE_GAME || currentPhase === GAME_STATES.GAME_STOPPED) {
 			if (!preGameShown) {
 				$top.addClass("pre-game").removeClass("in-game post-game stopped");
 				preGameShown = true;
 			}
-		} else if (gamedata.game.phase === GAME_STATES.IN_GAME) {
-			// Hide pre-game when game starts (only if clock is running)
-			if (preGameShown && gamedata.game.clock.isRunning) {
+		} else if (currentPhase === GAME_STATES.IN_GAME) {
+			// Transitioning from post-game or pre-game to in-game
+			if (phaseChanged && (previousPhase === GAME_STATES.POST_GAME || previousPhase === GAME_STATES.PRE_GAME)) {
 				preGameShown = false;
-				// Show countdown before starting
-				showCountdown(() => {
-					$top.removeClass("pre-game").addClass("in-game");
-				});
+				$top.removeClass("pre-game post-game").addClass("in-game");
+				// Show countdown before starting (using timing config from backend)
+				if (!countdownActive) {
+					showCountdown(() => {
+						// Countdown complete, game will continue (backend handles scene triggering)
+					}, gamedata.timingConfig);
+				}
 				return;
-			} else if (!preGameShown && !gamedata.game.clock.isRunning && gamedata.game.round > 0 && !countdownActive) {
-				// New round starting - show countdown
+			} else if (!gamedata.game.clock.isRunning && gamedata.game.round > 0 && !countdownActive) {
+				// New round starting - show countdown (using timing config from backend)
 				showCountdown(() => {
-					// Countdown complete, game will continue
-				});
+					// Countdown complete, game will continue (backend handles scene triggering)
+				}, gamedata.timingConfig);
 			}
+		} else if (currentPhase === GAME_STATES.POST_GAME) {
+			// Ensure we're showing post-game phase
+			$top.removeClass("pre-game in-game").addClass("post-game");
 		}
 		
 		if (!currentWord || currentWord.root_word != gamedata.game.currentWord.root_word){
@@ -74,26 +87,35 @@ function onSocketConnect(){
 	})
 }
 
-function showCountdown(callback) {
+function showCountdown(callback, timingConfig) {
 	if (countdownActive) return;
 	countdownActive = true;
+	
+	// Use timing config from backend, or fallback to defaults
+	const config = timingConfig?.preRoundCountdown || {
+		duration: 3000,
+		numberDuration: 1000,
+		goDuration: 500,
+		animationDuration: 300
+	};
 	
 	let $overlay = $('.countdown-overlay');
 	let $number = $overlay.find('.countdown-number');
 	
 	$overlay.addClass('active');
 	
-	let count = 3;
+	// Calculate count based on numberDuration
+	let count = Math.floor(config.duration / config.numberDuration) - 1; // Subtract 1 for "GO!"
 	$number.text(count);
 	
 	let countdownInterval = setInterval(() => {
 		count--;
 		if (count > 0) {
 			$number.text(count);
-			// Animate
+			// Animate using timing config
 			gsap.fromTo($number, 
 				{ scale: 0, opacity: 0 },
-				{ scale: 1, opacity: 1, duration: 0.3 }
+				{ scale: 1, opacity: 1, duration: config.animationDuration / 1000 }
 			);
 		} else {
 			clearInterval(countdownInterval);
@@ -101,18 +123,18 @@ function showCountdown(callback) {
 			gsap.fromTo($number,
 				{ scale: 0, opacity: 0 },
 				{ 
-					scale: 1, opacity: 1, duration: 0.3,
+					scale: 1, opacity: 1, duration: config.animationDuration / 1000,
 					onComplete: () => {
 						setTimeout(() => {
 							$overlay.removeClass('active');
 							countdownActive = false;
 							if (callback) callback();
-						}, 500);
+						}, config.goDuration);
 					}
 				}
 			);
 		}
-	}, 1000);
+	}, config.numberDuration);
 }
 
 function updateGameState(gamedata){
@@ -248,59 +270,95 @@ function updateCurrentWord(gamedata){
 	});
 
 	// animate alt letters in
-	let tl = gsap.timeline();
+	let tl = gsap.timeline({
+		onComplete: () => {
+			// change main letter text and value to alt
+			$letters.each((i, el) => {
+				let $main = $(el).find('.main-letter');
+				let $alt = $(el).find('.alt-letter');
+				$main.find('.letter-text').text($alt.find('.letter-text').text());
+				$main.find('.value').text($alt.find('.value').text());
+				
+				// Copy classes from parent
+				if ($(el).parent().hasClass('decoy')) {
+					$(el).addClass('decoy');
+				}
+				if ($(el).parent().hasClass('hidden')) {
+					$(el).addClass('hidden');
+				}
+				
+				gsap.set(el, {x: 0});
+			});
+			// reset main and alt letter positions
+		}
+	});
 	let $letters = $rootWord.find('.letter-holder');
 	_.forEach($letters, (el, i) =>{
-		tl.to(el, {x: -100, duration: 0.5, ease: "power2.inOut"}, i * 0.05)
-	})
-	// on animation complete
-	tl.then(() => {
-
-		// change main letter text and value to alt
-		$letters.each((i, el) => {
-			let $main = $(el).find('.main-letter');
-			let $alt = $(el).find('.alt-letter');
-			$main.find('.letter-text').text($alt.find('.letter-text').text());
-			$main.find('.value').text($alt.find('.value').text());
-			
-			// Copy classes from parent
-			if ($(el).parent().hasClass('decoy')) {
-				$(el).addClass('decoy');
-			}
-			if ($(el).parent().hasClass('hidden')) {
-				$(el).addClass('hidden');
-			}
-			
-			gsap.to(el, {
-				x: 0,
-				duration: 0
-			})
-		})
-		// reset main and alt letter positions
-	})
-	tl.play();
+		tl.to(el, {x: -100, duration: 0.5, ease: "power2.inOut"}, i * 0.05);
+	});
 }
+
+// Track post-game state to show interstitial only once
+let postGameInterstitialShown = false;
+let postGameLeaderboardsShown = false;
+let postGamePhase = null;
 
 function updateLeaderboard(gamedata){
 	// Show interstitial first if in post-game
 	if (gamedata.game.phase === GAME_STATES.POST_GAME) {
-		// Check if we should show leaderboards (after 5 seconds)
-		if (gamedata.game.clock.elapsed >= 5000) {
-			// Hide interstitial and show leaderboards
-			$('.interstitial').hide();
-			showLeaderboards(gamedata);
+		// Use timing config from backend for interstitial duration
+		const timingConfig = gamedata.timingConfig?.postGame || { interstitialDuration: 5000 };
+		const interstitialDuration = timingConfig.interstitialDuration;
+		
+		// Reset flags if we just entered post-game
+		if (postGamePhase !== GAME_STATES.POST_GAME) {
+			postGameInterstitialShown = false;
+			postGameLeaderboardsShown = false;
+			postGamePhase = GAME_STATES.POST_GAME;
+			// Clear any existing countdown interval when entering post-game
+			if (countdownInterval) {
+				clearInterval(countdownInterval);
+				countdownInterval = null;
+			}
+		}
+		
+		// Check if we should show leaderboards (after interstitial duration)
+		const elapsed = gamedata.game.clock.elapsed || 0;
+		if (elapsed >= interstitialDuration) {
+			// Hide interstitial
+			$('.interstitial').css('display', 'none');
+			// Only call showLeaderboards once when transitioning to leaderboard phase
+			if (!postGameLeaderboardsShown) {
+				showLeaderboards(gamedata);
+				postGameLeaderboardsShown = true;
+			}
+			// Update countdown info continuously while showing leaderboards
+			// This will be called on every state update, so countdown will update
+			updateNextRoundInfo(gamedata);
 		} else {
-			// Show interstitial
-			showInterstitial(gamedata);
+			// Show interstitial immediately when entering post-game
+			if (!postGameInterstitialShown) {
+				showInterstitial(gamedata);
+				postGameInterstitialShown = true;
+			} else {
+				// Keep interstitial visible during interstitial phase
+				$('.interstitial').show();
+			}
+			// Don't show countdown during interstitial phase - it will show during leaderboard phase
+			updateNextRoundInfo(gamedata);
 		}
 	} else {
+		// Reset post-game tracking when leaving post-game
+		if (postGamePhase === GAME_STATES.POST_GAME) {
+			postGameInterstitialShown = false;
+			postGameLeaderboardsShown = false;
+			postGamePhase = null;
+			$('.interstitial').hide();
+		}
 		// Update all three leaderboards
 		updateLeaderboardDisplay('.running-leaderboard', gamedata.runningLeaderboard || []);
 		updateLeaderboardDisplay('.round-leaderboard', gamedata.roundLeaderboard || []);
 		updateLeaderboardDisplay('.all-time-leaderboard', gamedata.allTimeLeaderboard || []);
-		
-		// Don't update next round info when not in post-game phase
-		// (it will be updated when we enter post-game)
 	}
 }
 
@@ -330,13 +388,14 @@ function showInterstitial(gamedata){
 		}
 	}
 	
-	// Animate in
+	// Show and animate in
+	$interstitial.show();
 	gsap.fromTo($interstitial, 
 		{ opacity: 0, scale: 0.8 },
 		{ opacity: 1, scale: 1, duration: 0.5 }
 	);
 	
-	// Hide after 5 seconds and show leaderboards (triggered by clock cue point)
+	// Hide after interstitial duration and show leaderboards (triggered by clock cue point)
 	// The clock will handle the timing via cue points
 }
 
@@ -360,14 +419,13 @@ function updateNextRoundInfo(gamedata){
 	let $countdown = $('.next-round-info .countdown-text');
 	let $gameOver = $('.next-round-info .game-over-text');
 	
-	// Clear any existing interval
-	if (countdownInterval) {
-		clearInterval(countdownInterval);
-		countdownInterval = null;
-	}
-	
 	// Only update next round info when in post-game phase
 	if (gamedata.game.phase !== GAME_STATES.POST_GAME) {
+		// Clear any existing interval when leaving post-game
+		if (countdownInterval) {
+			clearInterval(countdownInterval);
+			countdownInterval = null;
+		}
 		$countdown.hide();
 		$gameOver.hide();
 		return;
@@ -377,20 +435,31 @@ function updateNextRoundInfo(gamedata){
 	// If roundSuccess is false, the game is over and won't auto-start
 	if (gamedata.roundSuccess === true) {
 		$gameOver.hide();
-		// Start countdown from 10
-		let countdown = 10;
-		$countdown.text(`Next round in ${countdown}...`).show();
 		
-		countdownInterval = setInterval(() => {
-			countdown--;
-			if (countdown > 0) {
-				$countdown.text(`Next round in ${countdown}...`);
+		// Use timing config from backend for countdown duration
+		const timingConfig = gamedata.timingConfig?.postGame || { interstitialDuration: 5000, leaderboardDuration: 10000, totalDuration: 15000 };
+		const interstitialDuration = timingConfig.interstitialDuration || 5000;
+		const totalDuration = timingConfig.totalDuration || (interstitialDuration + (timingConfig.leaderboardDuration || 10000));
+		
+		// Calculate remaining time until next round starts based on actual clock elapsed
+		// The clock.elapsed is updated by the backend on each tick
+		const elapsed = gamedata.game.clock.elapsed || 0;
+		const remaining = Math.max(0, Math.ceil((totalDuration - elapsed) / 1000));
+		
+		// Only show countdown during leaderboard phase (after interstitial)
+		if (elapsed >= interstitialDuration) {
+			// Update countdown text based on remaining time from backend clock
+			// This will update on each state update from the backend
+			if (remaining > 0) {
+				$countdown.text(`Next round in ${remaining}...`).show();
 			} else {
-				clearInterval(countdownInterval);
-				countdownInterval = null;
-				$countdown.text('Starting next round...');
+				$countdown.text('Starting next round...').show();
+				// Backend will automatically trigger the next round via cue point at totalDuration
 			}
-		}, 1000);
+		} else {
+			// During interstitial phase, hide countdown
+			$countdown.hide();
+		}
 	} else {
 		// Game is over - hide countdown and show game over message
 		$countdown.hide();
